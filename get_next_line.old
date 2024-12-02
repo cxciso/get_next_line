@@ -1,0 +1,49 @@
+
+#include "get_next_line.h"
+
+char	*get_next_line(int fd)
+{
+	char *buf;
+	int count;
+	static char *final = NULL;
+	char *sub;
+	int len;
+	if (fd < 0) // si l'ouverture n'a pas marcher
+	{
+		printf("ERROR");
+		return (0);
+	}
+	buf = malloc(sizeof(buf) * BUFFER_SIZE + 1);
+	if (final)
+	{
+		len = ft_strchrx(final, '\n');
+		if (len >= 0)
+		{
+			sub = ft_substr(final, 0, len);
+			final = ft_substr(final, len + 1, ft_strlen(final) - len);
+			return (sub);
+		}
+	} // count = read(fd, buf, BUFFER_SIZE);//lis le contenu du fichier
+	count = 1;
+	while (count > 0)
+	{
+		count = read(fd, buf, BUFFER_SIZE); // lis le contenu du fichier
+		buf[count] = '\0';                 
+			// pour fermer la chaine de caractere donc il va s'arreter de lire a mon dernier caractere
+		if (final == NULL)
+			final = ft_strdup(buf);
+		else if (count > 0)
+			final = ft_strjoin(final, buf);
+		len = ft_strchrx(final, '\n');
+		if (len >= 0)
+		{
+			sub = ft_substr(final, 0, len);
+			final = ft_substr(final, len + 1, ft_strlen(final) - len);
+			return (sub);
+		}
+	}
+	sub = ft_strdup(final);
+	final = NULL;
+	return (sub);
+}
+
